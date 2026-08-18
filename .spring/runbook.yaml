@@ -1,0 +1,26 @@
+spring: "1.0"
+name: Coffee Blend
+description: Static HTML/CSS site — no build step, served straight from the repo root
+meta:
+  kind: app
+  path: .
+  framework: null
+  language: html
+  packageManager: null
+prerequisites: []
+steps:
+  - name: Free the port if in use
+    run: lsof -ti tcp:8080 -sTCP:LISTEN | xargs kill 2>/dev/null || true
+    optional: true
+  - name: Serve the static site
+    run: npx --yes serve@14 --listen 8080 --no-clipboard .
+    background: true
+    ready_when:
+      type: http
+      url: http://localhost:8080
+      timeout: 60s
+verify:
+  - name: Home page responds
+    check: curl -fsS http://localhost:8080/ -o /dev/null
+  - name: Stylesheet is served
+    check: curl -fsS http://localhost:8080/css/style.css -o /dev/null
